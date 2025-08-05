@@ -2,7 +2,9 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-label";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import z from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -23,6 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
 
 const formSchema = z
   .object({
@@ -41,8 +44,10 @@ const formSchema = z
     }
   );
 
+type FormValues = z.infer<typeof formSchema>;
 const SignUpForm = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const router = useRouter();
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nome: "",
@@ -52,9 +57,22 @@ const SignUpForm = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log("Formulário válido e enviado com sucesso!");
-    console.log(values);
+  async function onSubmit(values: FormValues) {
+    await authClient.signUp.email({
+      name: values.nome,
+      email: values.email,
+      password: values.senha,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+        onError: (error) => {
+          if (error.error.code === "USER_ALREADY_EXISTS") {
+            toast.error("Usuário já existe. Tente fazer login.");
+          }
+        },
+      },
+    });
   }
 
   return (
