@@ -1,13 +1,13 @@
+import { desc } from "drizzle-orm";
 import Image from "next/image";
 
 import CategorySelector from "@/components/common/category-selector";
+import Footer from "@/components/common/footer";
 import { Header } from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db";
-import { desc } from "drizzle-orm";
 import { productTable } from "@/db/schema";
-import Footer from "@/components/common/footer";
 
 const Home = async () => {
   const products = await db.query.productTable.findMany({
@@ -38,6 +38,34 @@ const Home = async () => {
             className="w-full h-auto"
           />
         </div>
+        <h3 className="font-semibold px-6">Marcas parceiras</h3>
+        <div className="flex w-full gap-6 overflow-x-auto px-6">
+          <div className="px-4 flex flex-col items-center">
+            <Image src="/icon-adidas.png" alt="Adidas" width={80} height={80} />
+            <p className="text-xs font-medium text-center mt-2">Adidas</p>
+          </div>
+
+          <div className="px-4 flex flex-col items-center">
+            <Image src="/icon-nike.png" alt="Nike" width={80} height={80} />
+            <p className="text-xs font-medium text-center mt-2">Nike</p>
+          </div>
+
+          <div className="px-4 flex flex-col items-center">
+            <Image src="/icon-puma.png" alt="Puma" width={80} height={80} />
+            <p className="text-xs font-medium text-center mt-2">Puma</p>
+          </div>
+
+          <div className="px-4 flex flex-col items-center">
+            <Image
+              src="/icon-newbalance.png"
+              alt="New Balance"
+              width={80}
+              height={80}
+            />
+            <p className="text-xs font-medium text-center mt-2">New Balance</p>
+          </div>
+        </div>
+
         <ProductsList products={products} title="Mais vendidos" />
         <div className="px-5">
           <CategorySelector categories={categories} />
