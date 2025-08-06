@@ -5,9 +5,19 @@ import { Header } from "@/components/common/header";
 import ProductsList from "@/components/common/products-list";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db";
+import { desc } from "drizzle-orm";
+import { productTable } from "@/db/schema";
+import Footer from "@/components/common/footer";
 
 const Home = async () => {
   const products = await db.query.productTable.findMany({
+    with: {
+      variants: true,
+      category: true,
+    },
+  });
+  const newlyCreatedProducts = await db.query.productTable.findMany({
+    orderBy: [desc(productTable.createdAt)],
     with: {
       variants: true,
       category: true,
@@ -42,7 +52,9 @@ const Home = async () => {
             className="w-full h-auto"
           />
         </div>
+        <ProductsList products={newlyCreatedProducts} title="Novos produtos" />
       </div>
+      <Footer />
     </>
   );
 };
