@@ -26,7 +26,7 @@ export const userTable = pgTable("user", {
 });
 
 export const userRelations = relations(userTable, ({ many }) => ({
-  products: many(shippingAdressTable),
+  products: many(shippingAddressTable),
 }));
 
 export const sessionTable = pgTable("session", {
@@ -145,11 +145,11 @@ export const shippingAddressTable = pgTable("shipping_address", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const shippingAdressRelations = relations(
-  shippingAdressTable,
+export const shippingAddressRelations = relations(
+  shippingAddressTable,
   ({ one }) => ({
     user: one(userTable, {
-      fields: [shippingAdressTable.userId],
+      fields: [shippingAddressTable.userId],
       references: [userTable.id],
     }),
   })
