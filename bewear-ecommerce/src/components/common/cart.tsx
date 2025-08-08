@@ -8,6 +8,7 @@ import Image from "next/image";
 
 import { getCart } from "@/actions/get-card";
 import { formatCentsToBRL } from "@/helpers/money";
+import { useCart } from "@/hooks/queries/use-carts";
 
 import { Button } from "../ui/button";
 import {
@@ -20,10 +21,7 @@ import {
 import CartItem from "./cart-item";
 
 export const Cart = () => {
-  const { data: cart, isPending: cartIsLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: () => getCart(),
-  });
+  const { data: cart } = useCart();
   return (
     <Sheet>
       <SheetTrigger asChild>

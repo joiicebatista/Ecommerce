@@ -21,6 +21,10 @@ import { toast } from "sonner";
 
 import { decreaseCartProductQuantity } from "@/actions/decrease-cart-product-quantity";
 import { incrementCartProductQuantity } from "@/actions/increment-cart-product-quantity";
+import { removeCartProduct } from "@/actions/remove-cart-product";
+import { useDecreaseCartProduct } from "@/hooks/mutations/use-decrease-cart-product";
+import { useIncreaseCartProduct } from "@/hooks/mutations/use-increment-cart-products";
+import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-cart-products";
 
 const CartItem = ({
   id,
@@ -30,26 +34,16 @@ const CartItem = ({
   productVariantPriceInCents,
   quantity,
 }: CartItemProps) => {
-  const queryClient = useQueryClient();
-  const removeProductFromCartMutation = useMutation({
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-  });
-  const incrementCartProductQuantityMutation = useMutation({
-    mutationKey: ["increment-cart-product-quantity"],
-    mutationFn: () => incrementCartProductQuantity({ cartItemId: id }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-  });
-  const decreaseCartProductQuantityMutation = useMutation({
-    mutationKey: ["decrease-cart-product-quantity"],
-    mutationFn: () => decreaseCartProductQuantity({ cartItemId: id }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-  });
+  const removeProductFromCartMutation = useRemoveProductFromCart(id);
+  const incrementCartProductQuantityMutation = useIncreaseCartProduct(id);
+  const decreaseCartProductQuantityMutation = useDecreaseCartProduct(id);
+  const handleDeleteClick = () => {
+    removeProductFromCartMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Produto removido do carrinho.");
+      },
+    });
+  };
   const handleDecreaseQuantityClick = () => {
     decreaseCartProductQuantityMutation.mutate(undefined, {
       onSuccess: () => {
@@ -100,7 +94,7 @@ const CartItem = ({
           </div>
         </div>
         <div className="flex flex-col items-end justify-center gap-2">
-          <Button variant="outline" size="icon">
+          <Button variant="outline" size="icon" onClick={handleDeleteClick}>
             <TrashIcon />
           </Button>
           <p className="text-sm font-bold">
