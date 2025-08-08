@@ -30,8 +30,6 @@ const AddToCartButton = ({
       toast.success("Produto adicionado à sacola!");
     },
   });
-  console.log("Carrinho atualizado", getCart());
-
   return (
     <Button
       className="rounded-full"
