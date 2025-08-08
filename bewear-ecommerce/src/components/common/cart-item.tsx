@@ -15,7 +15,12 @@ interface CartItemProps {
   quantity: number;
 }
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
+
+import { decreaseCartProductQuantity } from "@/actions/decrease-cart-product-quantity";
+import { incrementCartProductQuantity } from "@/actions/increment-cart-product-quantity";
 
 const CartItem = ({
   id,
@@ -25,12 +30,39 @@ const CartItem = ({
   productVariantPriceInCents,
   quantity,
 }: CartItemProps) => {
-  const [localQuantity, setLocalQuantity] = useState(quantity);
-  const handleDecrement = () => {
-    setLocalQuantity((prev) => (prev > 1 ? prev - 1 : prev));
+  const queryClient = useQueryClient();
+  const removeProductFromCartMutation = useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+  const incrementCartProductQuantityMutation = useMutation({
+    mutationKey: ["increment-cart-product-quantity"],
+    mutationFn: () => incrementCartProductQuantity({ cartItemId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+  const decreaseCartProductQuantityMutation = useMutation({
+    mutationKey: ["decrease-cart-product-quantity"],
+    mutationFn: () => decreaseCartProductQuantity({ cartItemId: id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+  });
+  const handleDecreaseQuantityClick = () => {
+    decreaseCartProductQuantityMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Quantidade do produto diminuida.");
+      },
+    });
   };
-  const handleIncrement = () => {
-    setLocalQuantity((prev) => prev + 1);
+  const handleIncreaseQuantityClick = () => {
+    incrementCartProductQuantityMutation.mutate(undefined, {
+      onSuccess: () => {
+        toast.success("Quantidade do produto aumentada.");
+      },
+    });
   };
   return (
     <>
@@ -52,15 +84,15 @@ const CartItem = ({
               <Button
                 className="h-4 w-4"
                 variant="ghost"
-                onClick={handleDecrement}
+                onClick={handleDecreaseQuantityClick}
               >
                 <MinusIcon />
               </Button>
-              <p className="text-xs font-medium">{localQuantity}</p>
+              <p className="text-xs font-medium">{quantity}</p>
               <Button
                 className="h-4 w-4"
                 variant="ghost"
-                onClick={handleIncrement}
+                onClick={handleIncreaseQuantityClick}
               >
                 <PlusIcon />
               </Button>
