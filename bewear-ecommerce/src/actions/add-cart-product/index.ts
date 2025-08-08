@@ -56,4 +56,9 @@ export const addProductToCart = async (data: AddProductToCartSchema) => {
     productVariantId: data.productVariantId,
     quantity: data.quantity,
   });
+  console.log(
+    "Adicionando produto ao carrinho",
+    data.productVariantId,
+    data.quantity
+  );
 };

@@ -197,7 +197,7 @@ export const cartItemTable = pgTable("cart_item", {
 
 export const cartItemRelations = relations(cartItemTable, ({ one }) => ({
   cart: one(cartTable, {
-    fields: [cartItemTable.id],
+    fields: [cartItemTable.cartId],
     references: [cartTable.id],
   }),
   productVariant: one(productVariantTable, {
