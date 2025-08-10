@@ -16,7 +16,7 @@ export const createShippingAddressSchema = z.object({
   neighborhood: z.string().min(1, "Bairro é obrigatório"),
   city: z.string().min(1, "Cidade é obrigatória"),
   state: z.string().min(2, "Estado é obrigatório").max(2, "Estado inválido"),
-  country: z.string().default("Brasil"),
+  country: z.string().min(1, "País é obrigatório").default("Brasil"),
 });
 
 export type CreateShippingAddressSchema = z.infer<

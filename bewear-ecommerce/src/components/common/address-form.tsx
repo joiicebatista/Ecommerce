@@ -20,13 +20,21 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useCreateShippingAddress } from "@/hooks/mutations/use-create-shipping-address";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
 
 interface AddressFormProps {
   onSuccess?: () => void;
+  shouldUpdateCart?: boolean;
 }
 
-export const AddressForm = ({ onSuccess }: AddressFormProps) => {
-  const { mutate: createAddress, isPending } = useCreateShippingAddress();
+export const AddressForm = ({
+  onSuccess,
+  shouldUpdateCart = false,
+}: AddressFormProps) => {
+  const { mutate: createAddress, isPending: isCreatingAddress } =
+    useCreateShippingAddress();
+  const { mutate: updateCartShippingAddress, isPending: isUpdatingCart } =
+    useUpdateCartShippingAddress();
 
   const defaultValues = {
     email: "",
@@ -51,9 +59,19 @@ export const AddressForm = ({ onSuccess }: AddressFormProps) => {
 
   const onSubmit = (data: CreateShippingAddressSchema) => {
     createAddress(data, {
-      onSuccess: () => {
-        form.reset(defaultValues); // Reset com valores padrão
-        onSuccess?.();
+      onSuccess: (result) => {
+        form.reset(defaultValues);
+
+        // Se shouldUpdateCart for true, vincular o endereço ao carrinho
+        if (shouldUpdateCart && result.data) {
+          updateCartShippingAddress(result.data.id, {
+            onSuccess: () => {
+              onSuccess?.();
+            },
+          });
+        } else {
+          onSuccess?.();
+        }
       },
     });
   };
@@ -254,8 +272,18 @@ export const AddressForm = ({ onSuccess }: AddressFormProps) => {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? "Salvando..." : "Salvar Endereço"}
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={isCreatingAddress || isUpdatingCart}
+        >
+          {isCreatingAddress
+            ? "Salvando..."
+            : isUpdatingCart
+              ? "Vinculando ao carrinho..."
+              : shouldUpdateCart
+                ? "Salvar e Continuar"
+                : "Salvar Endereço"}
         </Button>
       </form>
     </Form>

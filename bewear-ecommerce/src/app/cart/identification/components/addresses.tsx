@@ -3,10 +3,12 @@
 import { useState } from "react";
 
 import { AddressForm } from "@/components/common/address-form";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { shippingAddressTable } from "@/db/schema";
+import { useUpdateCartShippingAddress } from "@/hooks/mutations/use-update-cart-shipping-address";
 import { useShippingAddresses } from "@/hooks/queries/use-shipping-addresses";
 
 interface AddressesProps {
@@ -15,6 +17,9 @@ interface AddressesProps {
 
 const Addresses = ({ shippingAddresses }: AddressesProps) => {
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const { mutate: updateCartShippingAddress, isPending: isUpdatingCart } =
+    useUpdateCartShippingAddress();
+
   const {
     data: addresses,
     isLoading,
@@ -22,6 +27,17 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
   } = useShippingAddresses({
     initialData: shippingAddresses,
   });
+
+  const handleGoToPayment = () => {
+    if (selectedAddress && selectedAddress !== "add_new") {
+      updateCartShippingAddress(selectedAddress, {
+        onSuccess: () => {
+          // Redirecionar para página de pagamento ou próximo step
+          console.log("Redirecionando para pagamento...");
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -110,11 +126,26 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
         {selectedAddress === "add_new" && (
           <div className="mt-4">
             <AddressForm
+              shouldUpdateCart={true}
               onSuccess={() => {
                 setSelectedAddress(null);
-                // A query será invalidada automaticamente pelo hook
+                // Após criar e vincular o endereço, pode redirecionar para pagamento
+                console.log("Endereço criado e vinculado ao carrinho!");
               }}
             />
+          </div>
+        )}
+
+        {/* Botão Ir para Pagamento - aparece quando um endereço existente está selecionado */}
+        {selectedAddress && selectedAddress !== "add_new" && (
+          <div className="mt-6">
+            <Button
+              onClick={handleGoToPayment}
+              className="w-full"
+              disabled={isUpdatingCart}
+            >
+              {isUpdatingCart ? "Processando..." : "Ir para Pagamento"}
+            </Button>
           </div>
         )}
       </CardContent>
