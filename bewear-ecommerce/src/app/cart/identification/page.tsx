@@ -42,7 +42,7 @@ const IdentificationPage = async () => {
     <div>
       <Header />
       <div className="space-y-4 px-5">
-        <Addresses />
+        <Addresses shippingAddresses={shippingAddresses} />
         <div className="mt-12">
           <Footer />
         </div>

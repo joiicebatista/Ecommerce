@@ -6,11 +6,22 @@ import { AddressForm } from "@/components/common/address-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { shippingAddressTable } from "@/db/schema";
 import { useShippingAddresses } from "@/hooks/queries/use-shipping-addresses";
 
-const Addresses = () => {
+interface AddressesProps {
+  shippingAddresses: (typeof shippingAddressTable.$inferSelect)[];
+}
+
+const Addresses = ({ shippingAddresses }: AddressesProps) => {
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
-  const { data: addresses, isLoading, error } = useShippingAddresses();
+  const {
+    data: addresses,
+    isLoading,
+    error,
+  } = useShippingAddresses({
+    initialData: shippingAddresses,
+  });
 
   if (isLoading) {
     return (
