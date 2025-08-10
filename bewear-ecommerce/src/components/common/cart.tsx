@@ -5,6 +5,7 @@ import { Separator } from "@radix-ui/react-separator";
 import { useQuery } from "@tanstack/react-query";
 import { ShoppingBagIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import { getCart } from "@/actions/get-card";
 import { formatCentsToBRL } from "@/helpers/money";
@@ -77,7 +78,9 @@ export const Cart = () => {
                 <p>{formatCentsToBRL(cart?.totalPriceInCents ?? 0)}</p>
               </div>
 
-              <Button className="mt-5 rounded-full">Finalizar compra</Button>
+              <Button className="mt-5 rounded-full " asChild>
+                <Link href="/cart/identification">Finalizar compra</Link>
+              </Button>
             </div>
           )}
         </div>
