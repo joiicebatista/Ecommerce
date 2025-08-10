@@ -10,14 +10,14 @@ import { auth } from "@/lib/auth";
 import { AddProductToCartSchema, addProductToCartSchema } from "./schema";
 
 export const addProductToCart = async (data: AddProductToCartSchema) => {
-  addProductToCartSchema.safeParse(data);
+  addProductToCartSchema.parse(data);
   const session = await auth.api.getSession({
     headers: await headers(),
   });
   if (!session?.user) {
     throw new Error("Unauthorized");
   }
-  const productVariant = db.query.productVariantTable.findFirst({
+  const productVariant = await db.query.productVariantTable.findFirst({
     where: (productVariant, { eq }) =>
       eq(productVariant.id, data.productVariantId),
   });
@@ -46,7 +46,7 @@ export const addProductToCart = async (data: AddProductToCartSchema) => {
     await db
       .update(cartItemTable)
       .set({
-        quantity: (cartItem.quantity = data.quantity),
+        quantity: data.quantity,
       })
       .where(eq(cartItemTable.id, cartItem.id));
     return;

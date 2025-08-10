@@ -20,10 +20,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { decreaseCartProductQuantity } from "@/actions/decrease-cart-product-quantity";
-import { incrementCartProductQuantity } from "@/actions/increment-cart-product-quantity";
+import increaseCartProductQuantity from "@/actions/increase-cart-product-quantitiy";
 import { removeCartProduct } from "@/actions/remove-cart-product";
 import { useDecreaseCartProduct } from "@/hooks/mutations/use-decrease-cart-product";
-import { useIncreaseCartProduct } from "@/hooks/mutations/use-increment-cart-products";
+import { useIncreaseCartProduct } from "@/hooks/mutations/use-increase-cart-products";
 import { useRemoveProductFromCart } from "@/hooks/mutations/use-remove-cart-products";
 
 const CartItem = ({
@@ -35,7 +35,7 @@ const CartItem = ({
   quantity,
 }: CartItemProps) => {
   const removeProductFromCartMutation = useRemoveProductFromCart(id);
-  const incrementCartProductQuantityMutation = useIncreaseCartProduct(id);
+  const increaseCartProductQuantityMutation = useIncreaseCartProduct(id);
   const decreaseCartProductQuantityMutation = useDecreaseCartProduct(id);
   const handleDeleteClick = () => {
     removeProductFromCartMutation.mutate(undefined, {
@@ -52,7 +52,7 @@ const CartItem = ({
     });
   };
   const handleIncreaseQuantityClick = () => {
-    incrementCartProductQuantityMutation.mutate(undefined, {
+    increaseCartProductQuantityMutation.mutate(undefined, {
       onSuccess: () => {
         toast.success("Quantidade do produto aumentada.");
       },

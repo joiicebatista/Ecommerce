@@ -8,15 +8,12 @@ import { db } from "@/db";
 import { cartItemTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 
-import {
-  IncrementCartProductQuantitySchema,
-  incrementCartProductQuantitySchema,
-} from "./schema";
+import { increaseCartProductQuantitySchema } from "./schema";
 
-export const incrementCartProductQuantity = async (
-  data: IncrementCartProductQuantitySchema
+const increaseCartProductQuantity = async (
+  data: z.infer<typeof increaseCartProductQuantitySchema>
 ) => {
-  incrementCartProductQuantitySchema.parse(data);
+  increaseCartProductQuantitySchema.parse(data);
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -34,11 +31,15 @@ export const incrementCartProductQuantity = async (
   }
   const cartDoesNotBelongToUser = cartItem.cart.userId !== session.user.id;
   if (cartDoesNotBelongToUser) {
-    throw new Error("Unauthorized");
+    throw new Error("Cart item does not belong to user");
   }
-
+  if (cartItem.quantity >= 99) {
+    throw new Error("Maximum quantity reached");
+  }
   await db
     .update(cartItemTable)
     .set({ quantity: cartItem.quantity + 1 })
     .where(eq(cartItemTable.id, cartItem.id));
 };
+
+export default increaseCartProductQuantity;
