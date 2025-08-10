@@ -54,16 +54,6 @@ const Home = async () => {
             <Image src="/icon-puma.png" alt="Puma" width={80} height={80} />
             <p className="text-xs font-medium text-center mt-2">Puma</p>
           </div>
-
-          <div className="px-4 flex flex-col items-center">
-            <Image
-              src="/icon-newbalance.png"
-              alt="New Balance"
-              width={80}
-              height={80}
-            />
-            <p className="text-xs font-medium text-center mt-2">New Balance</p>
-          </div>
         </div>
 
         <ProductsList products={products} title="Mais vendidos" />
