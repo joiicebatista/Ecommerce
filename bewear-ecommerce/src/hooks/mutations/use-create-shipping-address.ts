@@ -17,8 +17,12 @@ export const useCreateShippingAddress = () => {
       });
       toast.success("Endereço adicionado com sucesso!");
     },
-    onError: () => {
-      toast.error("Erro ao adicionar endereço. Tente novamente.");
+    onError: (error) => {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Erro ao adicionar endereço. Tente novamente.";
+      toast.error(errorMessage);
     },
   });
 };

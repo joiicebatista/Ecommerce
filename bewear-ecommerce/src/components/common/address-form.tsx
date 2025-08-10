@@ -28,29 +28,31 @@ interface AddressFormProps {
 export const AddressForm = ({ onSuccess }: AddressFormProps) => {
   const { mutate: createAddress, isPending } = useCreateShippingAddress();
 
+  const defaultValues = {
+    email: "",
+    firstName: "",
+    lastName: "",
+    cpfOrCnpj: "",
+    phone: "",
+    zipCode: "",
+    street: "",
+    number: "",
+    complement: "",
+    neighborhood: "",
+    city: "",
+    state: "",
+    country: "Brasil",
+  };
+
   const form = useForm<CreateShippingAddressSchema>({
     resolver: zodResolver(createShippingAddressSchema),
-    defaultValues: {
-      email: "",
-      firstName: "",
-      lastName: "",
-      cpfOrCnpj: "",
-      phone: "",
-      zipCode: "",
-      street: "",
-      number: "",
-      complement: "",
-      neighborhood: "",
-      city: "",
-      state: "",
-      country: "Brasil",
-    },
+    defaultValues,
   });
 
   const onSubmit = (data: CreateShippingAddressSchema) => {
     createAddress(data, {
       onSuccess: () => {
-        form.reset();
+        form.reset(defaultValues); // Reset com valores padrão
         onSuccess?.();
       },
     });
