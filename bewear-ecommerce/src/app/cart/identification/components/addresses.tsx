@@ -1,6 +1,8 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { AddressForm } from "@/components/common/address-form";
 import { Button } from "@/components/ui/button";
@@ -16,6 +18,7 @@ interface AddressesProps {
 }
 
 const Addresses = ({ shippingAddresses }: AddressesProps) => {
+  const router = useRouter();
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const { mutate: updateCartShippingAddress, isPending: isUpdatingCart } =
     useUpdateCartShippingAddress();
@@ -32,7 +35,8 @@ const Addresses = ({ shippingAddresses }: AddressesProps) => {
     if (selectedAddress && selectedAddress !== "add_new") {
       updateCartShippingAddress(selectedAddress, {
         onSuccess: () => {
-          // Redirecionar para página de pagamento ou próximo step
+          toast.success("Endereço selecionado para entrega!");
+          router.push("/cart/confirmation");
           console.log("Redirecionando para pagamento...");
         },
       });
